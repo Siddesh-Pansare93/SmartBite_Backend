@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser'
 
 
 
-
 const app = express()
 
 
@@ -27,6 +26,10 @@ app.use(express.urlencoded())
 app.use(express.static("public"))
 
 
+import userRouter from './routes/user.route.js'
+
+
+app.use("/users" , userRouter)
 
 
 export default app
