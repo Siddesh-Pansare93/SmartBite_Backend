@@ -10,34 +10,35 @@ import bcrypt from 'bcrypt'
 
     console.log("request received")
   try {
-    const { name, email, password } = req.body;
+    const { name, email , clerkId } = req.body;
     console.log(req.body)
 
-//     // Validate required fields
-//     if (!name || !email || !password) {
-//       return res.status(400).json({ error: "Name, email, and password are required." });
-//     }
+    // Validate required fields
+    if (!name || !email || !clerkId) {
+      return res.status(400).json({ error: "Name, email, and password are required." });
+    }
 
-//     // Check if the user already exists
-//     const existingUser = await User.findOne({ email });
-//     if (existingUser) {
-//       return res.status(400).json({ error: "User already exists with this email." });
-//     }
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists with this email." });
+    }
 
-//     // Hash the password
-//     const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password
+    // const hashedPassword = await bcrypt.hash(password, 10);
 
-//     // Create the user
-//     const newUser = new User({
-//       name,
-//       email,
-//       passwordHash: hashedPassword
-//     });
+    // Create the user
+    const newUser = new User({
+      name,
+      email,
+      clerkId
+    });
 
-//     await newUser.save();
-//     res.status(201).json({ message: "User registered successfully." });
+    await newUser.save();
+    res.status(201).json({ message: "User registered successfully." , success : true  });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error." });
+    console.error(error);
+    res.status(500).json({ error: "Internal server error." , success : false});
   }
 };
 
