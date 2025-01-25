@@ -61,7 +61,7 @@ def get_data(image_path, user_prompt, user_profile, user_diet):
 
     )
     data = completion.choices[0].message.content
-    # print(data)
+    print(data)
 
     with open("response.txt", "w") as f:
         f.write(data)
@@ -74,6 +74,11 @@ def clean_data(data):
     ingredients = parsed_data.get("ingredients", [])
     feedback = parsed_data.get("feedback", [])
     final_thoughts = parsed_data.get("final_thoughts", [])
+
+    # print(nutritional_facts)
+    # print(ingredients)
+    # print(feedback)
+    # print(final_thoughts)
 
     # Process the list into a dictionary
     nutritional_facts_dict = {}

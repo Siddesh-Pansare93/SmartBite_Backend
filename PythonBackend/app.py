@@ -1,13 +1,12 @@
 from flask import Flask, request, jsonify
-from diet import generate_diet
-from scan_packed_food import scan
 import os
+import json
+from scan_packed_food import scan
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
 
 # Route to handle requests from the Node.js backend
 @app.route('/plan_diet', methods=['POST'])
@@ -32,15 +31,7 @@ def plan_diet():
         # Handle errors and return a 500 status
         print("Error:", e)
         return jsonify({"error": str(e)}), 500
-from flask import Flask, request, jsonify
-import os
-import json
-from scan_packed_food import scan
 
-app = Flask(__name__)
-
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 
@@ -101,7 +92,14 @@ def scan_img():
         print(result)
 
         # Return the result
-        return jsonify(result), 200
+        # return jsonify(result), 200
+
+        return jsonify({
+            "nutritional_facts": result[0],
+            "ingredients": result[1],
+            "feedback": result[2],
+            "user_diet": result[3]
+        }), 200
 
     except Exception as e:
         print("Error:", e)
