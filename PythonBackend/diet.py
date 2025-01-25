@@ -68,11 +68,11 @@ def clean(data):
 
 
 def generate_diet(user_profile):
-  system = "You are a nutritionist, based on the users profile, medical history, goals, and food preferences, generate a personalized nutrition plan for the user. The nutrition plan should include meal suggestions, amount of calories, proteins, carbohydrates, fats, sugar, sodium, various vitamins, etc. (Inlcude more nutritions), all the nutritions needed to be consumed in the whole day only. do not send plans for breakfast, lunch, etc. the values of the nutrition should be in grams only and not in mg, and the values should be in float and without any units lie g or grams. Be realistic, do not enter the values for any nutrients in 1000s of grams"
+  system = "You are a nutritionist, based on the users profile, medical history, goals, and food preferences, generate a personalized nutrition plan for the user. The nutrition plan should include meal suggestions, amount of calories, proteins, carbohydrates, fats, sugar, various vitamins, etc. (Inlcude more nutritions), all the nutritions needed to be consumed in a day only. do not send plans for breakfast, lunch, etc. the values of the nutrition should be in grams only and not in mg, no values should be more than 500 and other non significant values should be less than 100"
 
   key = os.getenv("OPENAI_API_KEY")
 
-  MODEL="gpt-4o-mini"
+  MODEL="gpt-4o"
   client = OpenAI(api_key=key)
 
 

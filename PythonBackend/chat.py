@@ -26,7 +26,7 @@ def get_response(system_message, messages):
     message = response.choices[0].message
     messages.append(message)
 
-    if message.content: print("Assistant:", message.content)
+    
 
     return message
 
@@ -34,7 +34,10 @@ def get_response(system_message, messages):
 def chat(messages, user):
     messages.append({"role": "user", "content": user})
 
-    result = get_response(system_message, messages)
+    message = get_response(system_message, messages)
+    messages = messages.append(message)
+    if message.content: print("Assistant:", message.content)
+    return messages, message.content
 
 
 if __name__ == '__main__':

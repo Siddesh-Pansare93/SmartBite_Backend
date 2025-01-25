@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import os
 import json
 from scan_packed_food import scan
+from diet import generate_diet
 
 app = Flask(__name__)
 
