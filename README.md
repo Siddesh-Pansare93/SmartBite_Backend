@@ -1,1 +1,1 @@
-#SmartBite - A Food Health Application
+SmartBite - A Food Health Application
