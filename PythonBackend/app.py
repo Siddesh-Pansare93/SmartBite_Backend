@@ -9,6 +9,16 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+
+
+
+@app.route('/')
+def index():
+    return "Hello, World!"
+
+
+
+
 # Route to handle requests from the Node.js backend
 @app.route('/plan_diet', methods=['POST'])
 def plan_diet():
