@@ -3,6 +3,8 @@ import os
 import json
 from scan_packed_food import scan
 from diet import generate_diet
+from chat import chat
+
 
 app = Flask(__name__)
 
@@ -86,19 +88,19 @@ def scan_img():
         user_details = json.loads(user_details)  # Convert JSON string to dictionary
 
         # Retrieve and parse user_Diet
-        user_diet = request.form.get("user_Diet")
-        if not user_diet:
-            print("Error: No user_Diet provided")
-            return jsonify({"error": "No user_Diet provided"}), 400
-        user_diet = json.loads(user_diet)  # Convert JSON string to dictionary
+        # user_diet = request.form.get("user_Diet")
+        # if not user_diet:
+        #     print("Error: No user_Diet provided")
+        #     return jsonify({"error": "No user_Diet provided"}), 400
+        # user_diet = json.loads(user_diet)  # Convert JSON string to dictionary
 
         # Log received data
         print("Description:", description)
         print("User Details:", user_details)
-        print("User Diet:", user_diet)
+        # print("User Diet:", user_diet)
 
         # Call the scan function with the received data
-        result = scan(file_path, description, user_details, user_diet)
+        result = scan(file_path, description, user_details)
 
         print(result)
 
@@ -109,12 +111,82 @@ def scan_img():
             "nutritional_facts": result[0],
             "ingredients": result[1],
             "feedback": result[2],
-            "user_diet": result[3]
+            "final_thoughts": result[3]
         }), 200
 
     except Exception as e:
         print("Error:", e)
         return jsonify({"error": str(e)}), 500
+
+
+
+
+# Route to handle requests from the Node.js backend
+@app.route('/chatbot', methods=['POST'])
+def chatbot():
+    print("Received request to chat")
+    try:
+        # Parse JSON data from the request
+        context = request.json
+        if not context:
+            return jsonify({"Context not found"}), 400
+        
+        print("Context :", context)
+
+        user_prompt = request.json
+        if not user_prompt:
+            return jsonify({"user_prompt not found"}), 400
+
+        print("user_prompt :", user_prompt)
+        
+        # Pass the data to the generate function
+        result = chat(context, user_prompt)
+
+        # Return the result as a JSON response
+        print("Result:", result)
+        return jsonify(result), 200
+    except Exception as e:
+        # Handle errors and return a 500 status
+        print("Error:", e)
+        return jsonify({"error": str(e)}), 500
+
+
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+
+@app.route('/upload_audio', methods=['POST'])
+def upload_audio():
+    try:
+        if 'audio' not in request.files:
+            return jsonify({"error": "No audio file received"}), 400  # Returns JSON error
+
+        audio_file = request.files['audio']
+        print("Received audio file:", audio_file.filename)
+
+        # Save the audio file
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], audio_file.filename)
+        audio_file.save(file_path)
+        print("Audio file saved at:", file_path)
+
+        VoiceChat(file_path)
+
+        
+
+        # Simulated response data
+        response_data = {
+            "message": "Processed successfully",
+        }
+
+        return jsonify(response_data)  # Ensure JSON response
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500  # Catch errors & return JSON
+
+
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

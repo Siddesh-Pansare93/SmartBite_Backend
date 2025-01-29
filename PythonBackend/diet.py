@@ -53,8 +53,9 @@ def clean(data):
         if ": " in fact:
             key, value = fact.split(": ", 1)  # Use maxsplit=1 to avoid issues with extra colons
             try:
-                nutritional_facts_dict[key] = float(value)  # Convert to float
+                nutritional_facts_dict[key] = str(value)  # Convert to float
             except ValueError:
+                print(fact)
                 print(f"Skipping invalid nutritional fact: {fact}")
         else:
             print(f"Skipping malformed fact: {fact}")
@@ -65,10 +66,19 @@ def clean(data):
     return nutritional_facts_json, suggestions
 
 
-
+system_message = """
+You are a nutritionist, based on the users profile, medical history, goals, and food preferences, generate a personalized nutrition plan for the user.
+diet_nutritions: generate a personalized nutrition plan for the user. The nutrition plan should have the reuqired amount of of the following nutritions only
+calories (Kcal), carbohydrates (g), proteins (g), fats (g), sodium (mg), calcium (mg), copper (mg), iron (mg), manganese (mg), phosphorus (mg), potassium (mg)
+all the nutritions needed to be consumed in a day only.
+the format for diet_nutritions - eg. calories : 400, carbohydrates : 500
+suggestions: Based on the generated nutrition plan, suggest some dishes for the user that will benefit them, suggest indian dishes
+"""
 
 def generate_diet(user_profile):
-  system = "You are a nutritionist, based on the users profile, medical history, goals, and food preferences, generate a personalized nutrition plan for the user. The nutrition plan should include meal suggestions, amount of calories, proteins, carbohydrates, fats, sugar, various vitamins, etc. (Inlcude more nutritions), all the nutritions needed to be consumed in a day only. do not send plans for breakfast, lunch, etc. the values of the nutrition should be in grams only and not in mg, no values should be more than 500 and other non significant values should be less than 100"
+#   system = "You are a nutritionist, based on the users profile, medical history, goals, and food preferences, generate a personalized nutrition plan for the user. The nutrition plan should include meal suggestions, amount of calories, proteins, carbohydrates, fats, sugar, various vitamins, etc. (Inlcude more nutritions), all the nutritions needed to be consumed in a day only. do not send plans for breakfast, lunch, etc. the values of the nutrition should be in grams only and not in mg, no values should be more than 500 and other non significant values should be less than 100"
+#   system = "You are a nutritionist, based on the users profile, medical history, goals, and food preferences, generate a personalized nutrition plan for the user. The nutrition plan should include meal suggestions, amount of calories, proteins, carbohydrates, fats, sugar, various vitamins, etc. (Inlcude more nutritions), all the nutritions needed to be consumed in a day only. do not send plans for breakfast, lunch, etc. the values of the nutrition should be in grams only and not in mg, and suggest indian dishes only"
+  system = system_message
 
   key = os.getenv("OPENAI_API_KEY")
 
@@ -103,7 +113,7 @@ if __name__ == '__main__':
         "Height (cm)": "170",
         "Gender": "Male",
         "Activity Level": "Moderately Active",
-        "Dietary Preferences": "Vegetarian",
+        "Dietary Preferences": "non Vegetarian",
         "Allergies": "None",
         "Taste Preferences": "Spicy",
         "Medical History": "None",

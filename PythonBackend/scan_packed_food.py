@@ -16,7 +16,6 @@ system_message = """
 You are an expert at structured data extraction. You will be given an image of packed food and you must convert it into the given structue by extracting the ingredients and the nutritional facts, for nutritional facts the amount should be equal to the amount of food the the user is consuming, if not mentioned then consider the whole packet (per serve). Also the values of in the nutrition_fact should be in grams, if given in miligrams then convert it to grams. Use g for grams unit
 You have also been provided the user_profile, based on the medical history and allergies and other useful info, find out whether it is good for the user to eat it, and give a feedback and its advantages or disagvantages.
 In the feedback, warn the user if the food is not good for them due to their allergies or medical history if such ingredients are present in the food.
-You have also been provided with the user's diet, based on the user's diet and give you final thoughts about whether the user should eat it
 """
 
 
@@ -32,7 +31,8 @@ def encode_image(image_path):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 
-def get_data(image_path, user_prompt, user_profile, user_diet):
+# def get_data(image_path, user_prompt, user_profile, user_diet):
+def get_data(image_path, user_prompt, user_profile):
     base64_image = encode_image(image_path)
 
     completion = client.beta.chat.completions.parse(
@@ -48,7 +48,7 @@ def get_data(image_path, user_prompt, user_profile, user_diet):
                     {
                         "type": "text",
                         # "text": "This is maggie noodles, I am gonna eat all of this",
-                        "text": f"{user_prompt} {user_profile} {user_diet}",
+                        "text": f"{user_prompt} {user_profile}",
                     },
                     {
                         "type": "image_url",
@@ -62,11 +62,7 @@ def get_data(image_path, user_prompt, user_profile, user_diet):
 
     )
     data = completion.choices[0].message.content
-    print(data)
-
-    with open("response.txt", "w") as f:
-        f.write(data)
-    
+    # print(data)
     return data
 
 def clean_data(data):    
@@ -86,6 +82,7 @@ def clean_data(data):
     for fact in nutritional_facts:
         fact = fact.lstrip("-").strip()
         key, value = fact.split(": ")
+        key = key.replace("Total", "").strip()
         # value = value.replace("g", "").strip()
         nutritional_facts_dict[key] = value
 
@@ -93,10 +90,15 @@ def clean_data(data):
     nutritional_facts_json = json.dumps(nutritional_facts_dict, indent=2)
     return nutritional_facts_json, ingredients, feedback, final_thoughts
 
-def scan(image_path, user_prompt, user_profile, user_diet):
-    data = get_data(image_path, user_prompt, user_profile, user_diet)
+# def scan(image_path, user_prompt, user_profile, user_diet):
+def scan(image_path, user_prompt, user_profile):
+    data = get_data(image_path, user_prompt, user_profile)
     # print(data)
     nutritional_facts_json, ingredients, feedback, final_thoughts = clean_data(data)
+    print(nutritional_facts_json)
+    print(ingredients)
+    print(feedback)
+    print(final_thoughts)
     return [nutritional_facts_json, ingredients, feedback, final_thoughts]
     
 
